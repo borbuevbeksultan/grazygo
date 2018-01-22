@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="kg.gps.iceknight.awalkintheclouds.MainActivity">
+
+    <Button
+        android:id="@+id/setMock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="invokeSetMockLocation"
+        android:text="setMockLocation" />
+
+    <Button
+        android:id="@+id/resetMock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="resetLocation"
+        android:text="resetMockLocation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="coord: "
+        android:id="@+id/status" />
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TableRow>
+
+            <TextView
+                android:text="Широта"
+                android:textSize="22sp"
+                android:layout_width="100dp" />
+
+            <EditText
+                android:textSize="22sp"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:text="Долгота"
+                android:textSize="22sp"
+                android:layout_width="100dp" />
+
+            <EditText
+                android:textSize="22sp"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="set location"
+                android:layout_span="2"
+                />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Setted: "
+                android:textSize="20sp"
+                />
+
+        </TableRow>
+        <TableRow>
+            <Button
+                android:id="@+id/notification"
+                android:onClick="showNotificationInvoke"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Hide"
+                />
+        </TableRow>
+    </TableLayout>
+</LinearLayout>
