@@ -6,82 +6,84 @@
     android:orientation="vertical"
     tools:context="kg.gps.iceknight.awalkintheclouds.MainActivity">
 
-    <Button
-        android:id="@+id/setMock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="invokeSetMockLocation"
-        android:text="setMockLocation" />
-
-    <Button
-        android:id="@+id/resetMock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="resetLocation"
-        android:text="resetMockLocation" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="coord: "
-        android:id="@+id/status" />
-
     <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="40dp"
+        android:weightSum="2">
 
-        <TableRow>
-
-            <TextView
-                android:text="Широта"
-                android:textSize="22sp"
-                android:layout_width="100dp" />
-
-            <EditText
-                android:textSize="22sp"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="35dp">
+            <LinearLayout
+                android:layout_weight="1">
+                <NumberPicker
+                    android:id="@+id/numberPicker1"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content">
+                </NumberPicker>
+                <TextView
+                    android:paddingLeft="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="km"
+                    android:layout_gravity="bottom"
+                    >
+                </TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1">
+                <NumberPicker
+                    android:id="@+id/numberPicker2"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    >
+                </NumberPicker>
+                <TextView
+                    android:paddingLeft="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="sec"
+                    android:layout_gravity="bottom">
+                </TextView>
+            </LinearLayout>
         </TableRow>
 
         <TableRow>
-
-            <TextView
-                android:text="Долгота"
-                android:textSize="22sp"
-                android:layout_width="100dp" />
-
-            <EditText
-                android:textSize="22sp"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_weight="1">
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="Variant1">
+                </RadioButton>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1">
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="Variant2">
+                </RadioButton>
+            </LinearLayout>
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:paddingTop="30dp">
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="set location"
-                android:layout_span="2"
+                android:text="START"
+                android:layout_weight="2"
                 />
         </TableRow>
 
-        <TableRow>
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="Setted: "
-                android:textSize="20sp"
+        <TableRow
+            android:paddingTop="35dp">
+            <EditText
+                android:layout_weight="1"
                 />
-
-        </TableRow>
-        <TableRow>
             <Button
-                android:id="@+id/notification"
-                android:onClick="showNotificationInvoke"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="Hide"
-                />
+                android:text="set"/>
         </TableRow>
     </TableLayout>
 </LinearLayout>

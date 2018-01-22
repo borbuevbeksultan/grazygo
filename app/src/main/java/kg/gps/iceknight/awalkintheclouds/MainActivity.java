@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,19 +26,34 @@ public class MainActivity extends AppCompatActivity {
     Location currentLocation;
 
     LocationManager locationManager;
-    TextView status;
-    Button showNotificationBtn;
     NotificationManager mNotificationManager;
+    NumberPicker numberPicker1;
+    NumberPicker numberPicker2;
 
     @SuppressLint({"MissingPermission", "WrongConstant"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
+        numberPicker1 = findViewById(R.id.numberPicker1);
+        numberPicker2 = findViewById(R.id.numberPicker2);
+        numberPicker1.setMinValue(0);
+        //Specify the maximum value/number of NumberPicker
+        numberPicker1.setMaxValue(100);
+
+        //Gets whether the selector wheel wraps when reaching the min/max value.
+        numberPicker1.setWrapSelectorWheel(true);
+
+        numberPicker2.setMinValue(0);
+        //Specify the maximum value/number of NumberPicker
+        numberPicker2.setMaxValue(100);
+
+        //Gets whether the selector wheel wraps when reaching the min/max value.
+        numberPicker2.setWrapSelectorWheel(true);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        status = findViewById(R.id.status);
-        showNotificationBtn = findViewById(R.id.notification);
-        currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Bundle extras = getIntent().getExtras();
@@ -62,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             Location location = GpsCoordService.calcNextCoord(currentLocation, 1000L);
             setMockLocation(location);
-            status.setText("coord: "+ location.getLatitude() + location.getLongitude());
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
         }
@@ -94,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
     public void resetLocation(View view) {
         try {
             disableMockLocation();
-            status.setText("coord: disabled");
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
         }
