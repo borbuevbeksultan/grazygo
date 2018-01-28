@@ -2,6 +2,8 @@ package kg.gps.iceknight.awalkintheclouds.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
@@ -13,6 +15,13 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class MovingService extends Service {
+    LocationManager locationManager;
+
+    @Override
+    public void onCreate() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -21,16 +30,12 @@ public class MovingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    TimeUnit.SECONDS.sleep(2);
-                    Toast.makeText(this, "Service + " + i, Toast.LENGTH_LONG).show();
-                } catch (InterruptedException e) {
-                    Toast.makeText(this, e.getMessage() + " service", Toast.LENGTH_LONG).show();
-                }
-            }
-        }).start();
+//        Location newLocation = GpsCoordService.calcNextCoord(MockService.getCurrentLocation(locationManager), 1000L);
+        Location newLocation = new Location(LOCATION_SERVICE);
+        newLocation.setLatitude(42.875991);
+        newLocation.setLatitude(74.614490);
+        MockService.mock(newLocation, locationManager);
+//        MockService.resetMock(locationManager);
         return START_NOT_STICKY;
     }
 

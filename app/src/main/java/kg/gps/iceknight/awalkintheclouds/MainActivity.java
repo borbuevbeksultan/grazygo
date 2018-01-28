@@ -21,6 +21,7 @@ import android.widget.Toast;
 import java.util.concurrent.TimeUnit;
 
 import kg.gps.iceknight.awalkintheclouds.service.GpsCoordService;
+import kg.gps.iceknight.awalkintheclouds.service.MockService;
 import kg.gps.iceknight.awalkintheclouds.service.MovingService;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,30 +44,28 @@ public class MainActivity extends AppCompatActivity {
         currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-//        Bundle extras = getIntent().getExtras();
-//        if (null != extras) {
-//            if ("notification".equals(extras.get("message"))) {
-//                try {
-////                    Location location = GpsCoordService.calcNextCoord(currentLocation, 1000L);
-////                    setMockLocation(location);
-////                    disableMockLocation();
-////                    Toast.makeText(MainActivity.this, "Прыжок выполнен", Toast.LENGTH_LONG).show();
-////                    finish();
-//                    new Thread(() -> {
-//                        for (int i = 0; i < 10; i++) {
-//                            try {
+        Bundle extras = getIntent().getExtras();
+        if (null != extras) {
+            if ("notification".equals(extras.get("message"))) {
+                try {
+                    new Thread(() -> {
+                        for (int i = 0; i < 100; i++) {
+                            try {
 //                                Toast.makeText(this, "Service + " + i, Toast.LENGTH_LONG).show();
-//                                Thread.sleep(1000);
-//                            } catch (InterruptedException e) {
+                                Thread.sleep(1000);
+                                Location location = GpsCoordService.calcNextCoord(currentLocation, 10L * i);
+                                setMockLocation(location);
+                            } catch (Exception e) {
 //                                Toast.makeText(this, e.getMessage() + " service", Toast.LENGTH_LONG).show();
-//                            }
-//                        }
-//                    }).start();
-//                } catch (Exception e) {
-//                    Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        }
+                            }
+                        }
+                    }).start();
+                    finish();
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
 
     }
 
