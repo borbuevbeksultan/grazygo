@@ -33,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
     Button showNotificationBtn;
     NotificationManager mNotificationManager;
 
+    Long speed;
+    Long distance;
+    Long delay;
+
     @SuppressLint({"MissingPermission", "WrongConstant"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +55,10 @@ public class MainActivity extends AppCompatActivity {
                     new Thread(() -> {
                         for (int i = 0; i < 100; i++) {
                             try {
-//                                Toast.makeText(this, "Service + " + i, Toast.LENGTH_LONG).show();
                                 Thread.sleep(1000);
                                 Location location = GpsCoordService.calcNextCoord(currentLocation, 10L * i);
                                 setMockLocation(location);
-                            } catch (Exception e) {
-//                                Toast.makeText(this, e.getMessage() + " service", Toast.LENGTH_LONG).show();
-                            }
+                            } catch (Exception e) { }
                         }
                     }).start();
                     finish();
@@ -132,11 +133,14 @@ public class MainActivity extends AppCompatActivity {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.notification_icon)
-                        .setContentTitle("Прогулка по облакам запущена")
-                        .setContentText("Нажмите на уведомление чтоб запустить сервис");
+                        .setContentTitle("CrazyGo запущен")
+                        .setContentText("Нажмите на уведомление, чтобы запустить сервис");
 
         Intent resultIntent = new Intent(this, MainActivity.class);
         resultIntent.putExtra("message", "notification");
+        resultIntent.putExtra("speed", speed);
+        resultIntent.putExtra("distance", distance);
+        resultIntent.putExtra("delay", delay);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
                 stackBuilder.addParentStack(MainActivity.class);
                 stackBuilder.addNextIntent(resultIntent);
