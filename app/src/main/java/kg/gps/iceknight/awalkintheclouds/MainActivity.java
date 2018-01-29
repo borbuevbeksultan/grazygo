@@ -15,7 +15,9 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,33 +35,52 @@ public class MainActivity extends AppCompatActivity {
     NotificationManager mNotificationManager;
     NumberPicker numberPicker1;
     NumberPicker numberPicker2;
+    Button mainButton;
+    EditText coordinatesEditTxt;
+    Button setBtn;
+
+    RadioButton variant1;
+    RadioButton variant2;
+    int variant;
 
     Long speed;
-    Long distance;
-    Long delay;
+    Integer distance;
+    Integer delay;
 
     @SuppressLint({"MissingPermission", "WrongConstant"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_main);
+
+        mainButton = findViewById(R.id.mainButton);
+        coordinatesEditTxt = findViewById(R.id.inputCoords);
+        setBtn = findViewById(R.id.setButton);
+        variant1 = findViewById(R.id.variant1);
+        variant2 = findViewById(R.id.variant2);
+        variant1.setOnClickListener(view -> {
+            variant2.setChecked(false);
+            variant = 1;
+        });
+
+        variant2.setOnClickListener(view -> {
+            variant1.setChecked(false);
+            variant = 2;
+        });
+
+        variant1.setChecked(true);
+        variant = 1;
         numberPicker1 = findViewById(R.id.numberPicker1);
         numberPicker2 = findViewById(R.id.numberPicker2);
-        numberPicker1.setMinValue(0);
-        //Specify the maximum value/number of NumberPicker
+        numberPicker1.setMinValue(1);
         numberPicker1.setMaxValue(100);
-
-        //Gets whether the selector wheel wraps when reaching the min/max value.
         numberPicker1.setWrapSelectorWheel(true);
-
-        numberPicker2.setMinValue(0);
-        //Specify the maximum value/number of NumberPicker
+        numberPicker1.setOnValueChangedListener((numberPicker, i, i1) -> distance = numberPicker.getValue());
+        numberPicker2.setMinValue(1);
         numberPicker2.setMaxValue(100);
-
-        //Gets whether the selector wheel wraps when reaching the min/max value.
         numberPicker2.setWrapSelectorWheel(true);
+        numberPicker2.setOnValueChangedListener((numberPicker, i, i1) -> delay = numberPicker.getValue());
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -168,4 +189,22 @@ public class MainActivity extends AppCompatActivity {
         mNotificationManager.notify(7, mBuilder.build());
     }
 
+    public void mainBtnListener(View view) {
+        if ((delay != null) && (distance != null)) {
+            switch (variant) {
+                case 1: {
+                    //TODO:
+                    break;
+                }
+                case 2: {
+                    //TODO:
+                    break;
+                }
+                default:
+                    Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
+        }
+    }
 }
