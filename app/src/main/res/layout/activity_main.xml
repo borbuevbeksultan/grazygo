@@ -20,7 +20,7 @@
             <LinearLayout
                 android:layout_weight="1">
                 <NumberPicker
-                    android:solidColor="#fff"
+                    android:theme="@style/MyNumberPickerTheme"
                     android:id="@+id/numberPicker1"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content">
@@ -31,6 +31,7 @@
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:text="km"
+                    android:textSize="22dp"
                     android:layout_gravity="bottom"
                     >
                 </TextView>
@@ -38,13 +39,14 @@
             <LinearLayout
                 android:layout_weight="1">
                 <NumberPicker
-                    android:solidColor="#fff"
+                    android:theme="@style/MyNumberPickerTheme"
                     android:id="@+id/numberPicker2"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     >
                 </NumberPicker>
                 <TextView
+                    android:textSize="22dp"
                     android:textColor="#fff"
                     android:paddingLeft="10dp"
                     android:layout_height="wrap_content"
@@ -59,6 +61,7 @@
             <LinearLayout
                 android:layout_weight="1">
                 <RadioButton
+                    android:theme="@style/MyRadioButton"
                     android:id="@+id/variant1"
                     android:textColor="#fff"
                     android:layout_height="wrap_content"
@@ -69,6 +72,7 @@
             <LinearLayout
                 android:layout_weight="1">
                 <RadioButton
+                    android:theme="@style/MyRadioButton"
                     android:id="@+id/variant2"
                     android:textColor="#fff"
                     android:layout_height="wrap_content"
@@ -92,8 +96,9 @@
         <TableRow
             android:paddingTop="35dp">
             <EditText
-                android:id="@+id/inputCoords"
                 android:foreground="#fff"
+                android:textColor="#fff"
+                android:id="@+id/inputCoords"
                 android:layout_weight="1"
                 android:textSize="16dp"
                 android:layout_height="wrap_content"
