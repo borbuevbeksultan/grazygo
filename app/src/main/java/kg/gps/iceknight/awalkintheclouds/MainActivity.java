@@ -30,7 +30,6 @@ import kg.gps.iceknight.awalkintheclouds.service.MovingService;
 public class MainActivity extends AppCompatActivity {
 
     Location currentLocation;
-
     LocationManager locationManager;
     NotificationManager mNotificationManager;
     NumberPicker numberPicker1;
@@ -38,11 +37,9 @@ public class MainActivity extends AppCompatActivity {
     Button mainButton;
     EditText coordinatesEditTxt;
     Button setBtn;
-
     RadioButton variant1;
     RadioButton variant2;
     int variant;
-
     Long speed;
     Integer distance;
     Integer delay;
@@ -52,69 +49,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mainButton = findViewById(R.id.mainButton);
-        coordinatesEditTxt = findViewById(R.id.inputCoords);
-        setBtn = findViewById(R.id.setButton);
-        variant1 = findViewById(R.id.variant1);
-        variant2 = findViewById(R.id.variant2);
-        variant1.setOnClickListener(view -> {
-            variant2.setChecked(false);
-            variant = 1;
-        });
-
-        variant2.setOnClickListener(view -> {
-            variant1.setChecked(false);
-            variant = 2;
-        });
-
-        variant1.setChecked(true);
-        variant = 1;
-        numberPicker1 = findViewById(R.id.numberPicker1);
-        numberPicker2 = findViewById(R.id.numberPicker2);
-        numberPicker1.setMinValue(1);
-        numberPicker1.setMaxValue(100);
-        numberPicker1.setWrapSelectorWheel(true);
-        numberPicker1.setOnValueChangedListener((numberPicker, i, i1) -> distance = numberPicker.getValue());
-        numberPicker2.setMinValue(1);
-        numberPicker2.setMaxValue(100);
-        numberPicker2.setWrapSelectorWheel(true);
-        numberPicker2.setOnValueChangedListener((numberPicker, i, i1) -> delay = numberPicker.getValue());
-
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
+        initialize();
         Bundle extras = getIntent().getExtras();
-        if (null != extras) {
-            if ("notification".equals(extras.get("message"))) {
-                try {
-                    new Thread(() -> {
-                        for (int i = 0; i < 100; i++) {
-                            try {
-                                Thread.sleep(1000);
-                                Location location = GpsCoordService.calcNextCoord(currentLocation, 10L * i);
-                                setMockLocation(location);
-                            } catch (Exception e) { }
-                        }
-                    }).start();
-                    finish();
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
-    }
-
-    @SuppressLint("SetTextI18n")
-    public void invokeSetMockLocation(View view) {
-        try {
-            Location location = GpsCoordService.calcNextCoord(currentLocation, 1000L);
-            setMockLocation(location);
-        } catch (Exception e) {
-            Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
-        }
+        handleNotification(extras);
     }
 
     @SuppressLint("NewApi")
@@ -140,15 +77,6 @@ public class MainActivity extends AppCompatActivity {
         return mockLocation;
     }
 
-    public void resetLocation(View view) {
-        try {
-            disableMockLocation();
-        } catch (Exception e) {
-            Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
-        }
-
-    }
-
     @SuppressLint("MissingPermission")
     public void disableMockLocation() {
         currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -156,11 +84,6 @@ public class MainActivity extends AppCompatActivity {
         if (locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
             locationManager.removeTestProvider(LocationManager.GPS_PROVIDER);
         }
-    }
-
-    public void showNotificationInvoke(View view) {
-        showNotification();
-        this.finish();
     }
 
     @SuppressLint({"MissingPermission", "NewApi", "WrongConstant"})
@@ -205,6 +128,64 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void initialize() {
+        mainButton = findViewById(R.id.mainButton);
+//        coordinatesEditTxt = findViewById(R.id.inputCoords);
+//        setBtn = findViewById(R.id.setButton);
+        variant1 = findViewById(R.id.variant1);
+        variant2 = findViewById(R.id.variant2);
+        variant1.setOnClickListener(view -> {
+            variant2.setChecked(false);
+            variant = 1;
+        });
+
+        variant2.setOnClickListener(view -> {
+            variant1.setChecked(false);
+            variant = 2;
+        });
+
+        variant1.setChecked(true);
+        variant = 1;
+        numberPicker1 = findViewById(R.id.numberPicker1);
+        numberPicker2 = findViewById(R.id.numberPicker2);
+        numberPicker1.setMinValue(1);
+        numberPicker1.setMaxValue(100);
+        numberPicker1.setWrapSelectorWheel(true);
+        numberPicker1.setOnValueChangedListener((numberPicker, i, i1) -> distance = numberPicker.getValue());
+        numberPicker2.setMinValue(1);
+        numberPicker2.setMaxValue(100);
+        numberPicker2.setWrapSelectorWheel(true);
+        numberPicker2.setOnValueChangedListener((numberPicker, i, i1) -> delay = numberPicker.getValue());
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+    }
+
+    public void handleNotification(Bundle extras) {
+
+        if (null != extras) {
+            if ("notification".equals(extras.get("message"))) {
+                try {
+                    new Thread(() -> {
+                        for (int i = 0; i < 100; i++) {
+                            try {
+                                Thread.sleep(1000);
+                                Location location = GpsCoordService.calcNextCoord(currentLocation, 10L * i);
+                                setMockLocation(location);
+                            } catch (Exception e) { }
+                        }
+                    }).start();
+                    finish();
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 }

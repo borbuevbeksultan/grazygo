@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#000"
     tools:context="kg.gps.iceknight.awalkintheclouds.MainActivity">
 
@@ -17,96 +16,166 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="35dp">
-            <LinearLayout
-                android:layout_weight="1">
+
+            <LinearLayout android:layout_weight="1">
+
                 <NumberPicker
-                    android:theme="@style/MyNumberPickerTheme"
                     android:id="@+id/numberPicker1"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content">
-                </NumberPicker>
-                <TextView
-                    android:textColor="#fff"
-                    android:paddingLeft="10dp"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:text="km"
-                    android:textSize="22dp"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/MyNumberPickerTheme"></NumberPicker>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    >
-                </TextView>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_weight="1">
-                <NumberPicker
-                    android:theme="@style/MyNumberPickerTheme"
-                    android:id="@+id/numberPicker2"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    >
-                </NumberPicker>
-                <TextView
-                    android:textSize="22dp"
-                    android:textColor="#fff"
                     android:paddingLeft="10dp"
-                    android:layout_height="wrap_content"
+                    android:text="km"
+                    android:textColor="#fff"
+                    android:textSize="22dp"></TextView>
+            </LinearLayout>
+
+            <LinearLayout android:layout_weight="1">
+
+                <NumberPicker
+                    android:id="@+id/numberPicker2"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/MyNumberPickerTheme"></NumberPicker>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:paddingLeft="10dp"
                     android:text="sec"
-                    android:layout_gravity="bottom">
-                </TextView>
+                    android:textColor="#fff"
+                    android:textSize="22dp"></TextView>
             </LinearLayout>
         </TableRow>
 
         <TableRow>
-            <LinearLayout
-                android:layout_weight="1">
+
+            <LinearLayout android:layout_weight="1">
+
                 <RadioButton
-                    android:theme="@style/MyRadioButton"
                     android:id="@+id/variant1"
-                    android:textColor="#fff"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:text="Variant1">
-                </RadioButton>
+                    android:layout_height="wrap_content"
+                    android:text="Variant1"
+                    android:textColor="#fff"
+                    android:textSize="25sp"
+                    android:theme="@style/MyRadioButton"></RadioButton>
             </LinearLayout>
-            <LinearLayout
-                android:layout_weight="1">
+
+            <LinearLayout android:layout_weight="1">
+
                 <RadioButton
-                    android:theme="@style/MyRadioButton"
                     android:id="@+id/variant2"
-                    android:textColor="#fff"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:text="Variant2">
-                </RadioButton>
+                    android:layout_height="wrap_content"
+                    android:text="Variant2"
+                    android:textColor="#fff"
+                    android:textSize="25sp"
+                    android:theme="@style/MyRadioButton"></RadioButton>
             </LinearLayout>
         </TableRow>
 
-        <TableRow
-            android:paddingTop="30dp">
+        <TableRow android:paddingTop="30dp">
+
             <Button
-                android:onClick="mainBtnListener"
                 android:id="@+id/mainButton"
-                android:text="START"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                />
+                android:background="#5d5"
+                android:onClick="mainBtnListener"
+                android:text="START"
+                android:textSize="25sp" />
+        </TableRow>
+
+        <!--<TableRow android:paddingTop="35dp">-->
+
+        <!--<EditText-->
+        <!--android:inputType="numberDecimal"-->
+        <!--style="@style/Base.AlertDialog.AppCompat.Light"-->
+        <!--android:id="@+id/inputCoords"-->
+        <!--android:background="#ddd"-->
+        <!--android:layout_height="40sp"-->
+        <!--android:textColor="#000"-->
+        <!--android:textSize="24sp"-->
+        <!--android:layout_weight="1"-->
+        <!--/>-->
+        <!--</TableRow>-->
+        <!--<TableRow android:layout_marginTop="20dp">-->
+        <!--<Button-->
+        <!--android:background="#18a"-->
+        <!--android:layout_weight="2"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/setButton"-->
+        <!--android:text="set"-->
+        <!--android:textSize="24sp" />-->
+        <!--</TableRow>-->
+
+        <TableRow
+            android:layout_marginTop="20dp"
+            android:background="#aaa">
+
+            <LinearLayout android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="  Широта"
+                    android:textSize="25sp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:inputType="numberDecimal"
+                    android:textSize="22sp" />
+            </LinearLayout>
+
+
         </TableRow>
 
         <TableRow
-            android:paddingTop="35dp">
-            <EditText
-                android:foreground="#fff"
-                android:textColor="#fff"
-                android:id="@+id/inputCoords"
-                android:layout_weight="1"
-                android:textSize="16dp"
-                android:layout_height="wrap_content"
-                />
+            android:layout_marginTop="20dp"
+            android:background="#aaa">
+
+            <LinearLayout android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="  Долгота"
+                    android:textSize="25sp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:inputType="numberDecimal"
+                    android:textSize="22sp" />
+            </LinearLayout>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="10sp"
+            android:layout_weight="2">
+
             <Button
-                android:id="@+id/setButton"
-                android:textSize="24dp"
-                android:text="set"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="#18a"
+                android:text="SET"
+                android:textSize="25sp" />
+
         </TableRow>
     </TableLayout>
 </LinearLayout>
