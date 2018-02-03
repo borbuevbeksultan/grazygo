@@ -21,6 +21,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import kg.gps.iceknight.awalkintheclouds.service.GpsCoordService;
@@ -29,13 +30,15 @@ import kg.gps.iceknight.awalkintheclouds.service.MovingService;
 
 public class MainActivity extends AppCompatActivity {
 
+    Location choosedLocation;
+
     Location currentLocation;
     LocationManager locationManager;
     NotificationManager mNotificationManager;
     NumberPicker numberPicker1;
     NumberPicker numberPicker2;
     Button mainButton;
-    EditText coordinatesEditTxt;
+    EditText editTextCoord;
     Button setBtn;
     RadioButton variant1;
     RadioButton variant2;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     Long speed;
     Integer distance;
     Integer delay;
+    Integer step = 50;
 
     @SuppressLint({"MissingPermission", "WrongConstant"})
     @Override
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint({"MissingPermission", "NewApi", "WrongConstant"})
-    public void showNotification() {
+    public void showNotification(int variant, Integer distance, Integer time) {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.notification_icon)
@@ -96,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
         Intent resultIntent = new Intent(this, MainActivity.class);
         resultIntent.putExtra("message", "notification");
-        resultIntent.putExtra("speed", speed);
+        resultIntent.putExtra("variant", variant);
+        resultIntent.putExtra("time", time);
         resultIntent.putExtra("distance", distance);
-        resultIntent.putExtra("delay", delay);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
                 stackBuilder.addParentStack(MainActivity.class);
                 stackBuilder.addNextIntent(resultIntent);
@@ -113,29 +117,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void mainBtnListener(View view) {
-        if ((delay != null) && (distance != null)) {
-            switch (variant) {
-                case 1: {
-                    //TODO:
-                    break;
-                }
-                case 2: {
-                    //TODO:
-                    break;
-                }
-                default:
-                    Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
+//        if ((delay != null) && (distance != null)) {
+        distance = numberPicker1.getValue();
+        delay = numberPicker2.getValue();
+        switch (variant) {
+            case 1: {
+                showNotification(1, distance, delay);
+                finish();
+                break;
             }
-        } else {
-            Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
+            case 2: {
+                showNotification(2, distance, delay);
+                finish();
+                break;
+            }
+            default:
+                Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
         }
+//        } else {
+//            Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
+//        }
     }
 
     @SuppressLint("MissingPermission")
     public void initialize() {
         mainButton = findViewById(R.id.mainButton);
-//        coordinatesEditTxt = findViewById(R.id.inputCoords);
-//        setBtn = findViewById(R.id.setButton);
+        editTextCoord = findViewById(R.id.editTextCoodr);
+        setBtn = findViewById(R.id.setBtn);
         variant1 = findViewById(R.id.variant1);
         variant2 = findViewById(R.id.variant2);
         variant1.setOnClickListener(view -> {
@@ -153,11 +161,11 @@ public class MainActivity extends AppCompatActivity {
         numberPicker1 = findViewById(R.id.numberPicker1);
         numberPicker2 = findViewById(R.id.numberPicker2);
         numberPicker1.setMinValue(1);
-        numberPicker1.setMaxValue(100);
+        numberPicker1.setMaxValue(10);
         numberPicker1.setWrapSelectorWheel(true);
         numberPicker1.setOnValueChangedListener((numberPicker, i, i1) -> distance = numberPicker.getValue());
         numberPicker2.setMinValue(1);
-        numberPicker2.setMaxValue(100);
+        numberPicker2.setMaxValue(10);
         numberPicker2.setWrapSelectorWheel(true);
         numberPicker2.setOnValueChangedListener((numberPicker, i, i1) -> delay = numberPicker.getValue());
 
@@ -172,20 +180,70 @@ public class MainActivity extends AppCompatActivity {
         if (null != extras) {
             if ("notification".equals(extras.get("message"))) {
                 try {
-                    new Thread(() -> {
-                        for (int i = 0; i < 100; i++) {
+                    int variant = extras.getInt("variant");
+                    if (variant == 2) {
+                        Integer time = extras.getInt("time");
+                        Integer distance = extras.getInt("distance");
+                        Integer steps = (distance * 1000) / step;
+                        Double delay = time.doubleValue() * 1000 / steps.doubleValue();
+
+                        new Thread(() -> {
+                            for (int i = 0; i < steps; i++) {
+                                try {
+                                    Thread.sleep(777);
+                                    Location location = GpsCoordService.calcNextCoord(currentLocation, 50L * i);
+                                    setMockLocation(location);
+                                } catch (Exception e) { }
+                            }
+                            setMockLocation(currentLocation);
+                        }).start();
+                    }
+                    if (variant == 1) {
+                        Integer time = extras.getInt("time");
+                        Integer distance = extras.getInt("distance");
+                        Integer steps = (distance * 1000) / step;
+
+                        new Thread(() -> {
                             try {
-                                Thread.sleep(1000);
-                                Location location = GpsCoordService.calcNextCoord(currentLocation, 10L * i);
+                                Location location = GpsCoordService.calcNextCoord(currentLocation, 1000L * distance);
                                 setMockLocation(location);
+                                Thread.sleep(time);
                             } catch (Exception e) { }
-                        }
-                    }).start();
+                            setMockLocation(currentLocation);
+                        }).start();
+                    }
                     finish();
                 } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, e.getMessage() + " setLocation", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
+        }
+    }
+
+    @SuppressLint("NewApi")
+    public void setLocation(View view) {
+        try {
+            Location location = new Location("");
+            String[] coordString = editTextCoord.getText().toString().split(" ");
+            for (int i = 0; i < coordString.length; i++) {
+                coordString[i] = coordString[i].trim().replace(",", ".");
+            }
+            Double latitude = Double.parseDouble(coordString[0]);
+            Double longitute = Double.parseDouble(coordString[1]);
+            location.setLatitude(latitude);
+            location.setLongitude(longitute);
+            choosedLocation = location;
+            Toast.makeText(MainActivity.this, choosedLocation.getLatitude() + " " + choosedLocation.getLongitude(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void resetLocation(View view) {
+        try {
+            disableMockLocation();
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, "Ошибка", Toast.LENGTH_LONG).show();
         }
     }
 }

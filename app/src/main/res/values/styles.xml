@@ -19,7 +19,7 @@
         <item name="android:numberPickerStyle" tools:ignore="NewApi">@style/MyNumberPickerTheme</item>
     </style>
 
-    <style name="MyNumberPickerTheme" parent="@android:style/Widget.Material.NumberPicker" tools:ignore="NewApi">
+    <style name="MyNumberPickerTheme">
         <item name="colorControlNormal ">#33691e</item>
         <item name="android:background">#b3e5fc</item>
         <item name="android:textSize">22dp</item>
