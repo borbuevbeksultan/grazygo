@@ -1,16 +1,21 @@
-package kg.gps.iceknight.awalkintheclouds;
+package kg.kg.iceknight.awalkintheclouds;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -18,15 +23,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import kg.gps.iceknight.awalkintheclouds.service.GpsCoordService;
-import kg.gps.iceknight.awalkintheclouds.service.MockService;
-import kg.gps.iceknight.awalkintheclouds.service.MovingService;
+import kg.kg.iceknight.awalkintheclouds.service.GpsCoordService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,22 +42,19 @@ public class MainActivity extends AppCompatActivity {
     RadioButton variant1;
     RadioButton variant2;
     int variant;
-    Long speed;
     Integer distance;
     Integer delay;
     Integer step = 50;
 
-    @SuppressLint({"MissingPermission", "WrongConstant"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initialize();
+        initialize(savedInstanceState);
         Bundle extras = getIntent().getExtras();
         handleNotification(extras);
     }
 
-    @SuppressLint("NewApi")
     public Location setMockLocation(Location mockLocation) {
 
         Location location = new Location(LocationManager.GPS_PROVIDER);
@@ -69,7 +65,14 @@ public class MainActivity extends AppCompatActivity {
         location.setLongitude(mockLocation.getLongitude());
         location.setAccuracy(10);
         location.setTime(System.currentTimeMillis());
-        location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        location.setSpeed(150F);
+        location.setBearing(45F);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        } else {
+            Toast.makeText(MainActivity.this, "Требуется android версии 4.2 и выше", Toast.LENGTH_LONG).show();
+            return null;
+        }
         locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
         locationManager.setTestProviderStatus(
                 LocationManager.GPS_PROVIDER,
@@ -81,8 +84,18 @@ public class MainActivity extends AppCompatActivity {
         return mockLocation;
     }
 
-    @SuppressLint("MissingPermission")
     public void disableMockLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(MainActivity.this, "Включите GPS и интернет", Toast.LENGTH_LONG).show();
+            return;
+        }
         currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         setMockLocation(currentLocation);
         if (locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
@@ -90,34 +103,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint({"MissingPermission", "NewApi", "WrongConstant"})
     public void showNotification(int variant, Integer distance, Integer time) {
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.notification_icon)
-                        .setContentTitle("CrazyGo запущен")
-                        .setContentText("Нажмите на уведомление, чтобы запустить сервис");
+        try {
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.notification_icon)
+                            .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
+                                    R.mipmap.ic_launcher))
+                            .setContentTitle("CrazyGo запущен")
+                            .setContentText("Нажмите на уведомление, чтобы запустить сервис")
+                            .setVisibility(Notification.VISIBILITY_PUBLIC);
 
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        resultIntent.putExtra("message", "notification");
-        resultIntent.putExtra("variant", variant);
-        resultIntent.putExtra("time", time);
-        resultIntent.putExtra("distance", distance);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+            Intent resultIntent = new Intent(this, MainActivity.class);
+            resultIntent.putExtra("message", "notification");
+            resultIntent.putExtra("variant", variant);
+            resultIntent.putExtra("time", time);
+            resultIntent.putExtra("distance", distance);
+            if (choosedLocation != null) {
+                resultIntent.putExtra("latitude", choosedLocation.getLatitude());
+                resultIntent.putExtra("longitude", choosedLocation.getLongitude());
+            } else {
+                resultIntent.putExtra("latitude", 0);
+                resultIntent.putExtra("longitude", 0);
+            }
+
+            TaskStackBuilder stackBuilder = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                stackBuilder = TaskStackBuilder.create(this);
                 stackBuilder.addParentStack(MainActivity.class);
                 stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
+                PendingIntent resultPendingIntent =
+                        null;
+                resultPendingIntent = stackBuilder.getPendingIntent(
                         0,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
-        mBuilder.setContentIntent(resultPendingIntent);
-        mBuilder.setAutoCancel(true);
-        mNotificationManager.notify(7, mBuilder.build());
+                mBuilder.setContentIntent(resultPendingIntent);
+                mBuilder.setAutoCancel(true);
+                mNotificationManager.notify(7, mBuilder.build());
+            } else {
+                Toast.makeText(MainActivity.this, "Требуется android версии 4.2 и выше", Toast.LENGTH_LONG).show();
+            }
+
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, "Ошибка " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
     }
 
     public void mainBtnListener(View view) {
-//        if ((delay != null) && (distance != null)) {
         distance = numberPicker1.getValue();
         delay = numberPicker2.getValue();
         switch (variant) {
@@ -134,32 +168,31 @@ public class MainActivity extends AppCompatActivity {
             default:
                 Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
         }
-//        } else {
-//            Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
-//        }
+
     }
 
-    @SuppressLint("MissingPermission")
-    public void initialize() {
+    public void initialize(Bundle bundle) {
         mainButton = findViewById(R.id.mainButton);
         editTextCoord = findViewById(R.id.editTextCoodr);
         setBtn = findViewById(R.id.setBtn);
         variant1 = findViewById(R.id.variant1);
         variant2 = findViewById(R.id.variant2);
+        numberPicker1 = findViewById(R.id.numberPicker1);
+        numberPicker2 = findViewById(R.id.numberPicker2);
         variant1.setOnClickListener(view -> {
             variant2.setChecked(false);
+            numberPicker2.setEnabled(true);
             variant = 1;
         });
 
         variant2.setOnClickListener(view -> {
             variant1.setChecked(false);
             variant = 2;
+            numberPicker2.setEnabled(false);
         });
 
         variant1.setChecked(true);
         variant = 1;
-        numberPicker1 = findViewById(R.id.numberPicker1);
-        numberPicker2 = findViewById(R.id.numberPicker2);
         numberPicker1.setMinValue(1);
         numberPicker1.setMaxValue(10);
         numberPicker1.setWrapSelectorWheel(true);
@@ -170,9 +203,22 @@ public class MainActivity extends AppCompatActivity {
         numberPicker2.setOnValueChangedListener((numberPicker, i, i1) -> delay = numberPicker.getValue());
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(MainActivity.this, "Включите GPS и интернет", Toast.LENGTH_LONG).show();
+            return;
+        }
 
+        currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     public void handleNotification(Bundle extras) {
@@ -181,35 +227,43 @@ public class MainActivity extends AppCompatActivity {
             if ("notification".equals(extras.get("message"))) {
                 try {
                     int variant = extras.getInt("variant");
+                    Location resetLocation = currentLocation;
+                    Double lat = extras.getDouble("latitude");
+                    Double lon = extras.getDouble("longitude");
+                    Location choosedLocation = new Location(currentLocation);
+                    if ((lat != 0) || (lon != 0)) {
+                        choosedLocation.setLatitude(lat);
+                        choosedLocation.setLongitude(lon);
+                    }
+
                     if (variant == 2) {
-                        Integer time = extras.getInt("time");
                         Integer distance = extras.getInt("distance");
                         Integer steps = (distance * 1000) / step;
-                        Double delay = time.doubleValue() * 1000 / steps.doubleValue();
 
                         new Thread(() -> {
                             for (int i = 0; i < steps; i++) {
                                 try {
                                     Thread.sleep(777);
-                                    Location location = GpsCoordService.calcNextCoord(currentLocation, 50L * i);
+                                    Location location = GpsCoordService.calcNextCoord(choosedLocation, 50L * i);
                                     setMockLocation(location);
                                 } catch (Exception e) { }
                             }
-                            setMockLocation(currentLocation);
+                            disableMockLocation();
                         }).start();
                     }
+
                     if (variant == 1) {
                         Integer time = extras.getInt("time");
                         Integer distance = extras.getInt("distance");
-                        Integer steps = (distance * 1000) / step;
 
                         new Thread(() -> {
                             try {
-                                Location location = GpsCoordService.calcNextCoord(currentLocation, 1000L * distance);
+                                Location location = GpsCoordService.calcNextCoord(choosedLocation, 1000L * distance);
                                 setMockLocation(location);
-                                Thread.sleep(time);
+                                Thread.sleep(time*1000);
+                                setMockLocation(currentLocation);
                             } catch (Exception e) { }
-                            setMockLocation(currentLocation);
+                            disableMockLocation();
                         }).start();
                     }
                     finish();
@@ -220,7 +274,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("NewApi")
     public void setLocation(View view) {
         try {
             Location location = new Location("");
@@ -233,7 +286,8 @@ public class MainActivity extends AppCompatActivity {
             location.setLatitude(latitude);
             location.setLongitude(longitute);
             choosedLocation = location;
-            Toast.makeText(MainActivity.this, choosedLocation.getLatitude() + " " + choosedLocation.getLongitude(), Toast.LENGTH_LONG).show();
+            setMockLocation(choosedLocation);
+            Toast.makeText(MainActivity.this, choosedLocation.getLatitude() + " " + choosedLocation.getLongitude() + " установлен", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
         }
@@ -242,8 +296,11 @@ public class MainActivity extends AppCompatActivity {
     public void resetLocation(View view) {
         try {
             disableMockLocation();
+            Toast.makeText(MainActivity.this, "Настройки сброшены", Toast.LENGTH_LONG).show();
+            choosedLocation = null;
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, "Ошибка", Toast.LENGTH_LONG).show();
         }
     }
+
 }

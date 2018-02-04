@@ -1,4 +1,4 @@
-package kg.gps.iceknight.awalkintheclouds;
+package kg.kg.iceknight.awalkintheclouds;
 
 import org.junit.Test;
 

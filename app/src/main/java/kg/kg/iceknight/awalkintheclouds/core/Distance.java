@@ -1,4 +1,4 @@
-package kg.gps.iceknight.awalkintheclouds.core;
+package kg.kg.iceknight.awalkintheclouds.core;
 
 import android.app.Service;
 import android.location.Location;

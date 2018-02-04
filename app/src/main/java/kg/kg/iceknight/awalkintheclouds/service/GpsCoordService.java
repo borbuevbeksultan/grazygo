@@ -1,4 +1,4 @@
-package kg.gps.iceknight.awalkintheclouds.service;
+package kg.kg.iceknight.awalkintheclouds.service;
 
 import android.location.Location;
 import android.location.LocationManager;
@@ -26,15 +26,4 @@ public class GpsCoordService {
         return convertedLocation;
     }
 
-    public static void imitateMoving(LocationManager locationManager, Location from, Location to, Long speed) {
-        Double deltaLatitude = 0D;
-        deltaLatitude = (from.getLatitude() > to.getLatitude()) ?
-                from.getLatitude() - to.getLatitude() : to.getLatitude() - from.getLatitude();
-
-        Double deltaLongitude = 0D;
-        deltaLongitude = (from.getLongitude() > to.getLongitude()) ?
-                from.getLongitude() - to.getLongitude() : to.getLongitude() - from.getLongitude();
-
-
-    }
 }

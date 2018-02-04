@@ -1,4 +1,4 @@
-package kg.gps.iceknight.awalkintheclouds.core;
+package kg.kg.iceknight.awalkintheclouds.core;
 
 /**
  * Created by Iceknight on 28.01.2018.

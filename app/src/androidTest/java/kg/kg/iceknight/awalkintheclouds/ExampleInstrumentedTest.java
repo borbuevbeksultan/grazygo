@@ -1,4 +1,4 @@
-package kg.gps.iceknight.awalkintheclouds;
+package kg.kg.iceknight.awalkintheclouds;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("kg.gps.iceknight.awalkintheclouds", appContext.getPackageName());
+        assertEquals("kg.kg.iceknight.awalkintheclouds", appContext.getPackageName());
     }
 }
