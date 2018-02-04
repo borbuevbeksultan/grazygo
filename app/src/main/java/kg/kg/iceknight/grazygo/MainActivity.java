@@ -1,4 +1,4 @@
-package kg.kg.iceknight.awalkintheclouds;
+package kg.kg.iceknight.grazygo;
 
 import android.Manifest;
 import android.app.Notification;
@@ -25,7 +25,7 @@ import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-import kg.kg.iceknight.awalkintheclouds.service.GpsCoordService;
+import kg.kg.iceknight.grazygo.service.CoordService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(MainActivity.this, "Включите GPS и интернет", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Включите геолокацию и интернет", Toast.LENGTH_LONG).show();
             return;
         }
         currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(MainActivity.this, "Включите GPS и интернет", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Включите геолокацию и интернет", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                             for (int i = 0; i < steps; i++) {
                                 try {
                                     Thread.sleep(777);
-                                    Location location = GpsCoordService.calcNextCoord(choosedLocation, 50L * i);
+                                    Location location = CoordService.calcNextCoord(choosedLocation, 50L * i);
                                     setMockLocation(location);
                                 } catch (Exception e) { }
                             }
@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
 
                         new Thread(() -> {
                             try {
-                                Location location = GpsCoordService.calcNextCoord(choosedLocation, 1000L * distance);
+                                Location location = CoordService.calcNextCoord(choosedLocation, 1000L * distance);
                                 setMockLocation(location);
                                 Thread.sleep(time*1000);
                                 setMockLocation(currentLocation);

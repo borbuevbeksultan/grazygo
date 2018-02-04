@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000"
-    tools:context="kg.kg.iceknight.awalkintheclouds.MainActivity">
+    tools:context="kg.kg.iceknight.grazygo.MainActivity">
 
     <TableLayout
         android:layout_width="match_parent"

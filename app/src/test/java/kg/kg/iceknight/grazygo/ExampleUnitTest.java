@@ -1,4 +1,4 @@
-package kg.kg.iceknight.awalkintheclouds;
+package kg.kg.iceknight.grazygo;
 
 import org.junit.Test;
 

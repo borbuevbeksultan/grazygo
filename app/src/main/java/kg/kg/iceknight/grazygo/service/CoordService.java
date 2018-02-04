@@ -1,4 +1,4 @@
-package kg.kg.iceknight.awalkintheclouds.service;
+package kg.kg.iceknight.grazygo.service;
 
 import android.location.Location;
 import android.location.LocationManager;
@@ -7,7 +7,7 @@ import android.location.LocationManager;
  * Created by bborbuev on 1/20/18.
  */
 
-public class GpsCoordService {
+public class CoordService {
 
     public static Location calcNextCoord(Location location, Long offset) {
         Double latitude = location.getLatitude();

@@ -1,4 +1,4 @@
-package kg.kg.iceknight.awalkintheclouds;
+package kg.kg.iceknight.grazygo;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

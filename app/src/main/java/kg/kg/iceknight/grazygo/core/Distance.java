@@ -1,4 +1,4 @@
-package kg.kg.iceknight.awalkintheclouds.core;
+package kg.kg.iceknight.grazygo.core;
 
 import android.app.Service;
 import android.location.Location;
