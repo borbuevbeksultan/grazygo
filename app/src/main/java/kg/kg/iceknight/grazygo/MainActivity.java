@@ -55,13 +55,6 @@ public class MainActivity extends AppCompatActivity {
             if (ActivityCompat
                     .checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 ActivityCompat.requestPermissions(this ,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
                 ActivityCompat.requestPermissions(this ,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},2);
             }
@@ -73,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public Location setMockLocation(Location mockLocation) {
+    public Location setMockLocation(Location mockLocation) throws SecurityException {
 
         Location location = new Location(LocationManager.GPS_PROVIDER);
         locationManager.addTestProvider(LocationManager.GPS_PROVIDER, false, false,
@@ -181,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     public void initialize(Bundle bundle) {
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mainButton = findViewById(R.id.mainButton);
         editTextCoord = findViewById(R.id.editTextCoodr);
         setBtn = findViewById(R.id.setBtn);
@@ -214,8 +208,6 @@ public class MainActivity extends AppCompatActivity {
         if (locationManager != null) {
             currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
-
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     public void handleNotification(Bundle extras) {
@@ -227,6 +219,13 @@ public class MainActivity extends AppCompatActivity {
                     Location resetLocation = currentLocation;
                     Double lat = extras.getDouble("latitude");
                     Double lon = extras.getDouble("longitude");
+                    try {
+                        disableMockLocation();
+                    } catch (SecurityException e) {
+                        Toast.makeText(MainActivity.this, "Включите имитацию местоположения", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
                     Location choosedLocation = new Location(currentLocation);
                     if ((lat != 0) || (lon != 0)) {
                         choosedLocation.setLatitude(lat);
@@ -285,6 +284,8 @@ public class MainActivity extends AppCompatActivity {
             choosedLocation = location;
             setMockLocation(choosedLocation);
             Toast.makeText(MainActivity.this, choosedLocation.getLatitude() + " " + choosedLocation.getLongitude() + " установлен", Toast.LENGTH_LONG).show();
+        } catch (SecurityException e) {
+            Toast.makeText(MainActivity.this, "Включите имитацию местоположения", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
         }
@@ -295,6 +296,8 @@ public class MainActivity extends AppCompatActivity {
             disableMockLocation();
             Toast.makeText(MainActivity.this, "Настройки сброшены", Toast.LENGTH_LONG).show();
             choosedLocation = null;
+        } catch (SecurityException e) {
+            Toast.makeText(MainActivity.this, "Включите имтитацию местоположения", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, "Ошибка", Toast.LENGTH_LONG).show();
         }
