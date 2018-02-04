@@ -1,6 +1,7 @@
 package kg.kg.iceknight.grazygo;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -50,9 +51,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initialize(savedInstanceState);
-        Bundle extras = getIntent().getExtras();
-        handleNotification(extras);
+        try {
+            if (ActivityCompat
+                    .checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                ActivityCompat.requestPermissions(this ,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+                ActivityCompat.requestPermissions(this ,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},2);
+            }
+            initialize(savedInstanceState);
+            Bundle extras = getIntent().getExtras();
+            handleNotification(extras);
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     public Location setMockLocation(Location mockLocation) {
@@ -84,18 +102,8 @@ public class MainActivity extends AppCompatActivity {
         return mockLocation;
     }
 
+    @SuppressLint("MissingPermission")
     public void disableMockLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(MainActivity.this, "Включите геолокацию и интернет", Toast.LENGTH_LONG).show();
-            return;
-        }
         currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         setMockLocation(currentLocation);
         if (locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
@@ -171,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("MissingPermission")
     public void initialize(Bundle bundle) {
         mainButton = findViewById(R.id.mainButton);
         editTextCoord = findViewById(R.id.editTextCoodr);
@@ -201,22 +210,10 @@ public class MainActivity extends AppCompatActivity {
         numberPicker2.setMaxValue(10);
         numberPicker2.setWrapSelectorWheel(true);
         numberPicker2.setOnValueChangedListener((numberPicker, i, i1) -> delay = numberPicker.getValue());
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(MainActivity.this, "Включите геолокацию и интернет", Toast.LENGTH_LONG).show();
-            return;
+        if (locationManager != null) {
+            currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
-
-        currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     }
