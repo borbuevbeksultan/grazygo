@@ -16,22 +16,28 @@ import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.Vibrator;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
 import kg.kg.iceknight.grazygo.service.CoordService;
+import kg.kg.iceknight.grazygo.service.EnableMockLocationDialogFragment;
+import kg.kg.iceknight.grazygo.service.ImageService;
 
 public class MainActivity extends AppCompatActivity {
 
     Location choosedLocation;
-
+    Vibrator vibrator;
     Location currentLocation;
     LocationManager locationManager;
     NotificationManager mNotificationManager;
@@ -49,9 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         try {
+            super.onCreate(savedInstanceState);
+            LayoutInflater inflater = getLayoutInflater();
+            final View v = inflater.inflate(R.layout.activity_main, null);
+            setContentView(v);
             if (ActivityCompat
                     .checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -60,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             }
             initialize(savedInstanceState);
             Bundle extras = getIntent().getExtras();
+
             handleNotification(extras);
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -110,12 +119,13 @@ public class MainActivity extends AppCompatActivity {
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.notification_icon)
                             .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
-                                    R.mipmap.ic_launcher))
-                            .setContentTitle("CrazyGo запущен")
-                            .setContentText("Нажмите на уведомление, чтобы запустить сервис")
+                                    R.mipmap.play))
+                            .setContentTitle("CrazyGo. Start")
+                            .setContentText("Нажмите на для запуска")
                             .setVisibility(Notification.VISIBILITY_PUBLIC);
 
             Intent resultIntent = new Intent(this, MainActivity.class);
+            resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             resultIntent.putExtra("message", "notification");
             resultIntent.putExtra("variant", variant);
             resultIntent.putExtra("time", time);
@@ -175,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     public void initialize(Bundle bundle) {
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         mainButton = findViewById(R.id.mainButton);
         editTextCoord = findViewById(R.id.editTextCoodr);
         setBtn = findViewById(R.id.setBtn);
@@ -210,11 +221,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("NewApi")
     public void handleNotification(Bundle extras) {
 
         if (null != extras) {
             if ("notification".equals(extras.get("message"))) {
                 try {
+                    try {
+                        vibrator.vibrate(500);
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
                     int variant = extras.getInt("variant");
                     Location resetLocation = currentLocation;
                     Double lat = extras.getDouble("latitude");
@@ -257,12 +275,11 @@ public class MainActivity extends AppCompatActivity {
                                 Location location = CoordService.calcNextCoord(choosedLocation, 1000L * distance);
                                 setMockLocation(location);
                                 Thread.sleep(time*1000);
-                                setMockLocation(currentLocation);
                             } catch (Exception e) { }
                             disableMockLocation();
                         }).start();
                     }
-                    finish();
+                    moveTaskToBack(false);
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -286,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, choosedLocation.getLatitude() + " " + choosedLocation.getLongitude() + " установлен", Toast.LENGTH_LONG).show();
         } catch (SecurityException e) {
             Toast.makeText(MainActivity.this, "Включите имитацию местоположения", Toast.LENGTH_LONG).show();
+            EnableMockLocationDialogFragment.createDialog(this);
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, "Введите корректные данные", Toast.LENGTH_LONG).show();
         }
@@ -298,9 +316,15 @@ public class MainActivity extends AppCompatActivity {
             choosedLocation = null;
         } catch (SecurityException e) {
             Toast.makeText(MainActivity.this, "Включите имтитацию местоположения", Toast.LENGTH_LONG).show();
+
         } catch (Exception e) {
             Toast.makeText(MainActivity.this, "Ошибка", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void exit(View view) {
+        disableMockLocation();
+        System.exit(0);
     }
 
 }
